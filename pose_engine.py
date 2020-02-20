@@ -72,17 +72,24 @@ class Pose:
 class PoseEngine(BasicEngine):
     """Engine used for pose tasks."""
 
-    def __init__(self, model_path, mirror=False):
+    def __init__(self, model_path, device_path=None, mirror=False):
         """Creates a PoseEngine with given model.
 
         Args:
           model_path: String, path to TF-Lite Flatbuffer file.
+          device_path (str): The device path for the Edge TPU this engine should use. This argument
+            is needed only when you have multiple Edge TPUs and more inference engines than
+            available Edge TPUs. For details, read `how to use multiple Edge TPUs
+            <https://coral.withgoogle.com/docs/edgetpu/multiple-edgetpu/>`_.
           mirror: Flip keypoints horizontally
 
         Raises:
           ValueError: An error occurred when model output is invalid.
         """
-        BasicEngine.__init__(self, model_path)
+        if device_path:
+            super().__init__(model_path, device_path)
+        else:
+            super().__init__(model_path)
         self._mirror = mirror
 
         self._input_tensor_shape = self.get_input_tensor_shape()
